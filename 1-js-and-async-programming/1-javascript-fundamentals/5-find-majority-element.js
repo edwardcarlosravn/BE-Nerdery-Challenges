@@ -22,20 +22,15 @@ findMajorityElement([1, 2, 3, 4, 5]); // Expected output: null
 const findMajorityElement = (arr) => {
     if(arr.length < 1) return null;
     if(arr.length === 1) return arr[0];
-    let candidate = null;
-    let count = 0; 
-    for(num of arr){
-        if(count === 0){
-            candidate = num;
-            count = 1;
-        } else if(candidate === num){
-            count++
-        }else{
-            count--;
+    const arraysorter = arr.sort();
+    let acc = 0;
+    const midterm = arr[Math.floor(arraysorter.length/2)];
+    for(let i = 0 ; i <= arraysorter.length ; i++){
+        if(arraysorter[i] === midterm){
+            acc++;
         }
     }
-    count = arr.filter(num => num === candidate).length;
-    return (count > arr.length/2) ? candidate : null;
+    return acc >= arraysorter.length/2 ? midterm : null;
 };
 
 module.exports = findMajorityElement;
