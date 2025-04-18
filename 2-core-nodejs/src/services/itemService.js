@@ -1,5 +1,5 @@
 const Item = require('../models/item');
-const {saveItem, getAllItems, updateItem} = require('../data/storage');
+const {saveItem, getAllItems, updateItem, deleteItem} = require('../data/storage');
 const {prompt} = require('../helper/input')
 const addNewItem = async () => {
     console.clear();
@@ -86,8 +86,34 @@ const updateItemByID = async() => {
     }
 
 }
+const deleteItemByID = async () => {
+    console.clear();
+    console.log('==============================='.green);
+    console.log('      DELETE WISHLIST ITEM     '.green);
+    console.log('==============================='.green); 
+    try {
+        const items = await getAllItems();
+        if(items.length === 0) throw new Error('No items found in your wishlistt');
+        const idStr = await prompt('\nEnter the ID of the item to delete: ');
+        const id = parseInt(idStr);
+        if(isNaN(id)) throw new Error('Invalid ID. please enter a number');
+        const confirmation = await prompt('\nAre you sure you want to delete this item? (y/n): ');
+        if(confirmation.toLowerCase()!== 'y' && confirmation.toLowerCase()!=='yes'){
+            console.log('\nDeletion cancelled');
+            await prompt('\nPress Enter to continue...')
+            return true;
+        }
+        await deleteItem(id);
+        console.log('\nItem deleted successfully!');
+        await prompt('\nPress Enter to continue...');
+    } catch (err) {
+        console.log(`Error : ${err.message}`.red);
+        await prompt('\nPress Enter to continue...');
+    }
+}
 module.exports = {
     addNewItem,
     listAllItems,
-    updateItemByID
+    updateItemByID,
+    deleteItemByID
 }

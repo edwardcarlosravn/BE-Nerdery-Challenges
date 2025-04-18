@@ -48,8 +48,22 @@ const updateItem = async (id, updatedItem) => {
         throw new Error(`Failed to update items: ${err.message}`);
     }
 }
+const deleteItem = async(id) => {
+    try {
+        const items = await getAllItems();
+        const index = items.findIndex(item => item.id === id);
+        if(index === -1) throw new Error(`Item not found`);
+        const deletedItem = items[index];
+        items.splice(index,1);
+        await fs.writeFile(dataFilePath, JSON.stringify(items, null, 2));
+        return deletedItem
+    } catch (err) {
+        throw new Error(`Failed to update items: ${err.message}`);
+    }
+}
 module.exports = {
     getAllItems,
     saveItem,
-    updateItem
+    updateItem,
+    deleteItem
 }
