@@ -111,9 +111,38 @@ const deleteItemByID = async () => {
         await prompt('\nPress Enter to continue...');
     }
 }
+const showSummary = async() => {
+    console.clear();
+    console.log('==============================='.green);
+    console.log('      WISHLIST SUMMARY        '.green);
+    console.log('==============================='.green);
+    try {
+        const items = await getAllItems();
+        if(items.length === 0) throw new Error('No items found in your wishlistt');
+        const totalItems = items.length;
+        const totalCost = items.reduce((acc, item) => acc + item.price,0);
+        const averagePrice = totalCost/totalItems;
+        const mostExpensiveItem = items.reduce((acc, item) =>  acc.price > item.price ? acc : item, items[0]);
+        console.log('\nWISHLIST STATISTICS:');
+        console.log('----------------------------');
+        console.log(`Total items: ${totalItems}`);
+        console.log(`Total cost: $${totalCost}`);
+        console.log(`Average price: $${averagePrice}`);
+        console.log('\n💰 MOST EXPENSIVE ITEM:');
+        console.log('----------------------------');
+        console.log(`Name: ${mostExpensiveItem.name}`);
+        console.log(`Price: $${mostExpensiveItem.price}`);
+        console.log(`Store: $${mostExpensiveItem.store}`);
+        await prompt('\nPress Enter to continue...');
+    } catch (err) {
+        console.log(`Error : ${err.message}`.red);
+        await prompt('\nPress Enter to continue...');
+    }
+}
 module.exports = {
     addNewItem,
     listAllItems,
     updateItemByID,
-    deleteItemByID
+    deleteItemByID,
+    showSummary
 }

@@ -1,5 +1,5 @@
 const {showMainMenu} = require('./helper/messages');
-const {addNewItem , listAllItems, updateItemByID,deleteItemByID} = require('./services/itemService');
+const {addNewItem , listAllItems, updateItemByID,deleteItemByID, showSummary} = require('./services/itemService');
 const {prompt} = require('./helper/input');
 require('colors');
 console.clear();
@@ -18,6 +18,7 @@ const handleOption = async (option) => {
             await deleteItemByID();
             break;
         case '5':
+            await showSummary();
             break;
         case '6':
             break;

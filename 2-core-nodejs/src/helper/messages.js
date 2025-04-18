@@ -15,8 +15,8 @@ const showMainMenu = () => {
         console.log(`${'2.'.green} View all items`);
         console.log(`${'3.'.green} Update an item`);
         console.log(`${'4.'.green} Delete an item`);
-        console.log(`${'5.'.green}  Export to CSV`);
-        console.log(`${'6.'.green} Show summary`);
+        console.log(`${'5.'.green} Show summary`);
+        console.log(`${'6.'.green} Export to CSV`);
         console.log(`${'0.'.green} Exit`);
         console.log('===============================');
         rl.question('Select an option: ', (option) => {
