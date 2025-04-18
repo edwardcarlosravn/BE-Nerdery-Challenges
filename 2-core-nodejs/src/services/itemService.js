@@ -1,5 +1,5 @@
 const Item = require('../models/item');
-const {saveItem, getAllItems} = require('../data/storage');
+const {saveItem, getAllItems, updateItem} = require('../data/storage');
 const {prompt} = require('../helper/input')
 const addNewItem = async () => {
     console.clear();
@@ -46,12 +46,48 @@ const listAllItems = async() => {
         await prompt('\nPress Enter to continue...')
         return true;
     } catch (err) {
-        console.log(`Error : ${err.message}`.red)
-        await prompt('\nPress Enter to continue...')
+        console.log(`Error : ${err.message}`.red);
+        await prompt('\nPress Enter to continue...');
         return true;
     }
 }
+const updateItemByID = async() => {
+    console.clear();
+    console.log('==============================='.green);
+    console.log('      UPDATE WISHLIST ITEM     '.green);
+    console.log('==============================='.green);   
+    try {
+        const items = await getAllItems();
+        if(items.length === 0) throw new Error('No items found in your wishlist');
+        const idStr = await prompt('\nEnter the ID of the item to update: ');
+        const id = parseInt(idStr);
+        if(isNaN(id)) throw new Error('Invalid ID. please enter a number');
+        const item = items.find(item => item.id === id);
+        if(!item) throw new Error(`Item with ${id} ID not found`);
+        console.log(`\nUpdating item: ${item.name} ($${item.price}, ${item.store})`);
+
+        const name = await prompt('Enter item name: ');
+        if(!name) throw new Error('Name is required');
+
+        const priceStr = await prompt('Enter item price: ');
+        const price = parseFloat(priceStr);
+        if(isNaN(price) || price <= 0 ) throw new Error('Price need to be a positive number: ');
+
+        const store = await prompt('Enter item store: ');
+        if(!store) throw new Error('Store is required');
+
+        const updatedItem = {name, price, store};
+        await updateItem(id, updatedItem);
+        console.log('\nItem updated successfully'.green);
+        await prompt('\nPress Enter to continue...');
+    } catch (err) {
+        console.log(`Error : ${err.message}`.red);
+        await prompt('\nPress Enter to continue...');
+    }
+
+}
 module.exports = {
     addNewItem,
-    listAllItems
+    listAllItems,
+    updateItemByID
 }

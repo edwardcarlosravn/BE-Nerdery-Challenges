@@ -36,7 +36,20 @@ const saveItem = async (item) => {
         throw new Error(`Failed to save item ${err.message}`);
     }
 }
+const updateItem = async (id, updatedItem) => {
+    try {
+        const items = await getAllItems();
+        const index = items.findIndex(item => item.id === id);
+        if(index === -1) throw new Error(`Item not found`);
+        items[index] = {...items[index], ...updatedItem};
+        await fs.writeFile(dataFilePath, JSON.stringify(items, null, 2));
+        return items[index];
+    } catch (err) {
+        throw new Error(`Failed to update items: ${err.message}`);
+    }
+}
 module.exports = {
     getAllItems,
-    saveItem
+    saveItem,
+    updateItem
 }
