@@ -1,10 +1,11 @@
 const {showMainMenu} = require('./helper/messages');
+const {addNewItem} = require('./services/itemService');
 require('colors');
 console.clear();
 const handleOption = async (option) => {
     switch (option) {
         case '1':
-            
+            return await addNewItem();
             break;
         case '2': 
             break;
