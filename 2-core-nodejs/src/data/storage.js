@@ -9,12 +9,11 @@ const ensureDirectoryExists = async () => {
         await fs.access(dir);
     } catch(err) {
         console.log(err);
-        await fs.mkdir(dir, { recursive: true });
+        await fs.mkdir(dir);
     }
 }
 const getAllItems = async () =>{
-    const flag = await ensureDirectoryExists();
-    console.log(flag);
+    await ensureDirectoryExists();
     try{
         const data = await fs.readFile(dataFilePath, 'utf8');
         return JSON.parse(data);
@@ -23,10 +22,14 @@ const getAllItems = async () =>{
     }
 }
 const saveItem = async (item) => {
-    const items = await getAllItems();
-    items.push(item);
-    await fs.writeFile(dataFilePath, JSON.stringify(items, null, 2));
-    return item;
+    try {
+        const items = await getAllItems();
+        items.push(item);
+        await fs.writeFile(dataFilePath, JSON.stringify(items, null, 2));
+        return item;
+    } catch(err) {
+        throw new Error(`Failed to save item ${err.message}`);
+    }
 }
 module.exports = {
     getAllItems,
