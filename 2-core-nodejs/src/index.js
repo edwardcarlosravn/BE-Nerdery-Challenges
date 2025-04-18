@@ -1,13 +1,15 @@
 const {showMainMenu} = require('./helper/messages');
-const {addNewItem} = require('./services/itemService');
+const {addNewItem , listAllItems} = require('./services/itemService');
+const {prompt} = require('./helper/input');
 require('colors');
 console.clear();
 const handleOption = async (option) => {
     switch (option) {
         case '1':
-            return await addNewItem();
+            await addNewItem();
             break;
         case '2': 
+            await listAllItems();
             break;
         case '3':
             break;
@@ -23,28 +25,19 @@ const handleOption = async (option) => {
             break;
         default:
             console.log('\nInvalid option. Press Enter to continue with a valid option...'.red);
-            return false;
+            await prompt('\nPress Enter to continue...')
     }   
     return true; 
 }
 const main = async () => {
     console.clear();
-    let validOption = true;
-    while(validOption){
-        const option = await showMainMenu();
-        validOption = await handleOption(option);
-        if(!validOption){
-            validOption = await new Promise(resolve => {
-                const readline = require('readline');
-                const rl = readline.createInterface({
-                    input: process.stdin,
-                    output: process.stdout
-                });
-                rl.question('', () => {
-                    rl.close();
-                    resolve(true);
-                });
-            });
+    while(true){
+        try{
+            const option = await showMainMenu();
+            await handleOption(option);
+        }catch (err) {
+            console.log(`Error : ${err.message}`.red)
+            await prompt('\nPress Enter to continue...')
         }
     }
 }
