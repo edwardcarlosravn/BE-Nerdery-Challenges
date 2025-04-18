@@ -24,7 +24,12 @@ const getAllItems = async () =>{
 const saveItem = async (item) => {
     try {
         const items = await getAllItems();
-        items.push(item);
+        const id = items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
+        const ItemWidthId = {
+            ...item,
+            id: id
+        }
+        items.push(ItemWidthId);
         await fs.writeFile(dataFilePath, JSON.stringify(items, null, 2));
         return item;
     } catch(err) {
