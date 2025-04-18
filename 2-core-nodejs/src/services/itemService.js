@@ -3,9 +3,9 @@ const {saveItem, getAllItems, updateItem, deleteItem, exportItemsToCSV} = requir
 const {prompt} = require('../helper/input')
 const addNewItem = async () => {
     console.clear();
-    console.log('==============================='.green);
-    console.log('       ADD NEW WISHLIST ITEM  '.green);
-    console.log('==============================='.green);
+    console.log('===============================');
+    console.log('       ADD NEW WISHLIST ITEM  ');
+    console.log('===============================');
     try {
         const name = await prompt('Enter item name: ');
         if(!name) throw new Error('Name is required');
@@ -19,7 +19,7 @@ const addNewItem = async () => {
 
         const newItem = new Item(name, price, store);
         await saveItem(newItem);
-        console.log('\nItem add successfully'.green);
+        console.log('\nItem add successfully');
         await prompt('\nPress Enter to continue...')
         return true;
     } catch(err) {
@@ -30,9 +30,9 @@ const addNewItem = async () => {
 }
 const listAllItems = async() => {
     console.clear();
-    console.log('==============================='.green);
-    console.log('       ALL WISHLIST ITEMS      '.green);
-    console.log('==============================='.green);
+    console.log('===============================');
+    console.log('       ALL WISHLIST ITEMS      ');
+    console.log('===============================');
     try {
         const items = await getAllItems();
         if(items.length === 0 || items === undefined){
@@ -53,9 +53,9 @@ const listAllItems = async() => {
 }
 const updateItemByID = async() => {
     console.clear();
-    console.log('==============================='.green);
-    console.log('      UPDATE WISHLIST ITEM     '.green);
-    console.log('==============================='.green);   
+    console.log('===============================');
+    console.log('      UPDATE WISHLIST ITEM     ');
+    console.log('===============================');   
     try {
         const items = await getAllItems();
         if(items.length === 0) throw new Error('No items found in your wishlist');
@@ -78,7 +78,7 @@ const updateItemByID = async() => {
 
         const updatedItem = {name, price, store};
         await updateItem(id, updatedItem);
-        console.log('\nItem updated successfully'.green);
+        console.log('\nItem updated successfully');
         await prompt('\nPress Enter to continue...');
     } catch (err) {
         console.log(`Error : ${err.message}`.red);
@@ -88,9 +88,9 @@ const updateItemByID = async() => {
 }
 const deleteItemByID = async () => {
     console.clear();
-    console.log('==============================='.green);
-    console.log('      DELETE WISHLIST ITEM     '.green);
-    console.log('==============================='.green); 
+    console.log('===============================');
+    console.log('      DELETE WISHLIST ITEM     ');
+    console.log('==============================='); 
     try {
         const items = await getAllItems();
         if(items.length === 0) throw new Error('No items found in your wishlistt');
@@ -113,9 +113,9 @@ const deleteItemByID = async () => {
 }
 const showSummary = async() => {
     console.clear();
-    console.log('==============================='.green);
-    console.log('      WISHLIST SUMMARY        '.green);
-    console.log('==============================='.green);
+    console.log('===============================');
+    console.log('      WISHLIST SUMMARY        ');
+    console.log('===============================');
     try {
         const items = await getAllItems();
         if(items.length === 0) throw new Error('No items found in your wishlistt');
@@ -141,9 +141,9 @@ const showSummary = async() => {
 }
 const exportToCSV = async() => {
     console.clear();
-    console.log('==============================='.green);
-    console.log('      EXPORT WISHLIST TO CSV  '.green);
-    console.log('==============================='.green);
+    console.log('===============================');
+    console.log('      EXPORT WISHLIST TO CSV  ');
+    console.log('===============================');
     try {
         const items = await getAllItems();
         if(items.length === 0) throw new Error('No items found in your wishlist');

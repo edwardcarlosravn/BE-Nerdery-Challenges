@@ -1,7 +1,6 @@
 const {showMainMenu} = require('./helper/messages');
 const {addNewItem , listAllItems, updateItemByID,deleteItemByID, showSummary, exportToCSV} = require('./services/itemService');
 const {prompt} = require('./helper/input');
-require('colors');
 console.clear();
 const handleOption = async (option) => {
     switch (option) {
