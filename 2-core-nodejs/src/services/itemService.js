@@ -1,5 +1,5 @@
 const Item = require('../models/item');
-const {saveItem, getAllItems, updateItem, deleteItem} = require('../data/storage');
+const {saveItem, getAllItems, updateItem, deleteItem, exportItemsToCSV} = require('../data/storage');
 const {prompt} = require('../helper/input')
 const addNewItem = async () => {
     console.clear();
@@ -139,10 +139,27 @@ const showSummary = async() => {
         await prompt('\nPress Enter to continue...');
     }
 }
+const exportToCSV = async() => {
+    console.clear();
+    console.log('==============================='.green);
+    console.log('      EXPORT WISHLIST TO CSV  '.green);
+    console.log('==============================='.green);
+    try {
+        const items = await getAllItems();
+        if(items.length === 0) throw new Error('No items found in your wishlist');
+        const filePath = await exportItemsToCSV(items);
+        console.log(`\nFile saved to: ${filePath}`);
+        await prompt('\nPress Enter to continue...');
+    } catch (err) {
+        console.log(`Error : ${err.message}`.red);
+        await prompt('\nPress Enter to continue...');
+    }
+}
 module.exports = {
     addNewItem,
     listAllItems,
     updateItemByID,
     deleteItemByID,
-    showSummary
+    showSummary,
+    exportToCSV
 }

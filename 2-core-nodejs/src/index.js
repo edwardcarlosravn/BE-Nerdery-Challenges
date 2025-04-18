@@ -1,5 +1,5 @@
 const {showMainMenu} = require('./helper/messages');
-const {addNewItem , listAllItems, updateItemByID,deleteItemByID, showSummary} = require('./services/itemService');
+const {addNewItem , listAllItems, updateItemByID,deleteItemByID, showSummary, exportToCSV} = require('./services/itemService');
 const {prompt} = require('./helper/input');
 require('colors');
 console.clear();
@@ -21,6 +21,7 @@ const handleOption = async (option) => {
             await showSummary();
             break;
         case '6':
+            await exportToCSV();
             break;
         case '0':
             console.log('Thanks for using Edward Wishlist');

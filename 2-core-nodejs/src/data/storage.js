@@ -61,9 +61,30 @@ const deleteItem = async(id) => {
         throw new Error(`Failed to update items: ${err.message}`);
     }
 }
+const exportItemsToCSV = async (items) => {
+    const headers = ['ID', 'Name', 'Price','Store'];
+    let csvContent = headers.join(',')+'\n';
+    items.forEach(item => {
+        const row = [
+            item.id,
+            `${item.name}`,
+            item.price,
+            `${item.store}`
+        ];
+        csvContent += row.join(',') + '\n'
+    });
+    try {
+        const filePath = path.join(__dirname, '../../data/wishlistCSV');
+        await fs.writeFile(filePath, csvContent);
+        return filePath;
+    } catch (err) {
+        throw new Error(`Failed to update items: ${err.message}`);
+    }
+}
 module.exports = {
     getAllItems,
     saveItem,
     updateItem,
-    deleteItem
+    deleteItem,
+    exportItemsToCSV
 }
