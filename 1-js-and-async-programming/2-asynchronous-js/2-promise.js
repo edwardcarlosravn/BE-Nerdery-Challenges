@@ -24,15 +24,34 @@
  *
  * @returns {Promise<User[]>} A promise that resolves to an array of users who dislike more movies than they like.
  */
+const { getUsers, getLikedMovies, getDislikedMovies } = require('./utils/mocked-api');
+const getMovieCount = (movieList, userId) => {
+  const userMovies = movieList.find(item => item.userId === userId);
+  return userMovies ? userMovies.movies.length : 0;
+}
 const getUsersWithMoreDislikedMoviesThanLikedMovies = () => {
-  // Add your code here
-
-  return [];
+  return Promise.all([
+    getUsers(), 
+    getLikedMovies(),
+    getDislikedMovies() 
+  ]).then(([users, likeMovies, dislikeMovies]) => {
+      const processedUsers = users.map(user => {
+        const likesCount = getMovieCount(likeMovies, user.id);
+        const dislikesCount = getMovieCount(dislikeMovies, user.id);
+        if(likesCount < dislikesCount){
+          return {...user}
+        }
+        return null
+      });
+      return processedUsers.filter(user => user!== null)
+  }).catch(err => {
+    return Promise.reject(new Error('failed to load data.', err));
+  });
 };
 
 getUsersWithMoreDislikedMoviesThanLikedMovies().then((users) => {
   console.log("Users with more disliked movies than liked movies:");
   users.forEach((user) => {
-    console.log(user, age);
+    console.log(user);
   });
-});
+}).catch(err => console.log(err));

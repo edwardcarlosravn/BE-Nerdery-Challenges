@@ -31,6 +31,21 @@ Requirements:
 
 */
 
-const factorialChain = (number, lastDigits) => {};
+const factorialChain = (number, lastDigits) => {
+    if(number < 0 || lastDigits < 0) throw Error('Only possitive numbers are accept');
+    let factorialSum = 0;
+    let factorial = 1;
+    for(let i = 1; i <= number ; i++){
+        factorial = factorial * i;
+        factorialSum += factorial;
+    };
+    const stringedFactorial = String(factorialSum)
+    const mappedFactorial = 
+      size >= stringedFactorial.length ? 
+        stringedFactorial.padStart(size, '0') :
+        stringedFactorial.slice(-size)
+
+   return mappedFactorial
+};
 
 module.exports = factorialChain;
