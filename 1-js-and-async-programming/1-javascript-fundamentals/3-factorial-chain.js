@@ -39,11 +39,13 @@ const factorialChain = (number, lastDigits) => {
         factorial = factorial * i;
         factorialSum += factorial;
     };
-    let stringSum = String(factorialSum);
-    while(stringSum.length < lastDigits){
-        stringSum = '0' + stringSum;
-    }
-    return stringSum.slice(-lastDigits);
+    const stringedFactorial = String(factorialSum)
+    const mappedFactorial = 
+      size >= stringedFactorial.length ? 
+        stringedFactorial.padStart(size, '0') :
+        stringedFactorial.slice(-size)
+
+   return mappedFactorial
 };
 
 module.exports = factorialChain;
