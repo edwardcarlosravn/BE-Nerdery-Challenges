@@ -23,7 +23,7 @@ const timeDifference = (a, b) => {
     const hours = Math.floor(differenceInSeconds / 3600);
     const minutes = Math.floor(differenceInSeconds / 60) % 60;
     const seconds = differenceInSeconds % 60;
-    const padWidthZero = (num) => (num < 10) ? `0${num}` : String(num);
+    const padWidthZero = String(num).padStart(2, '0')
     return `${padWidthZero(hours)}:${padWidthZero(minutes)}:${padWidthZero(seconds)}`;
 };
 
