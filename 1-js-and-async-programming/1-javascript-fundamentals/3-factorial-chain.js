@@ -37,7 +37,7 @@ const factorialChain = (number, lastDigits) => {
     let factorial = 1;
     for(let i = 1; i <= number ; i++){
         factorial = factorial * i;
-        factorialSum += acc;
+        factorialSum += factorial;
     };
     let stringSum = String(factorialSum);
     while(stringSum.length < lastDigits){
