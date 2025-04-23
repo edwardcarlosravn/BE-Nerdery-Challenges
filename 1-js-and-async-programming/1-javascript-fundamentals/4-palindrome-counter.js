@@ -32,13 +32,22 @@ Requirements:
 */
 
 const palindromeCounter = (text, minLength) => {
+
     const textSplit = text.split(' ');
+
     if(textSplit.length < 1 || minLength < 1) return 0;
+
     return textSplit.reduce((acc, word) => {
+
         const cleanWord = word.toLowerCase().replace(/[^a-z]/g,'');
-        if(cleanWord.length >= minLength && cleanWord === cleanWord.split('').reverse().join('') ){
+        
+        if(
+            cleanWord.length >= minLength && 
+            cleanWord === cleanWord.split('').reverse().join('') 
+        ){
             return acc + 1;
         }
+
         return acc;
     }, 0);
 };
