@@ -74,7 +74,7 @@ const exportItemsToCSV = async (items) => {
         csvContent += row.join(',') + '\n'
     });
     try {
-        const filePath = path.join(__dirname, '../../data/wishlistCSV');
+        const filePath = path.join(__dirname, '../../data/wishlist.csv');
         await fs.writeFile(filePath, csvContent);
         return filePath;
     } catch (err) {
