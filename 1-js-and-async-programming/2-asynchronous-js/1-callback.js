@@ -21,18 +21,23 @@
 const makeRequest = require("./utils/make-requests");
 
 const makeRequestWithRetries = (attempts) => {
-  makeRequest(attempts, (error, message) => {
-      if(!error){ 
-        console.log(message);
-        return;
-      } else {
-        if(attempts >= 0){
-          makeRequestWithRetries(attempts - 1);
-        }else{
-          console.log(`"All attempts failed."`)
+  let currentAttemp = 1; 
+  const attempRequest = (remainingAttempts) => {
+    makeRequest(currentAttemp, (error, message) => {
+        if(!error){ 
+          console.log(message);
+          return;
+        } else {
+          if(remainingAttempts > 1){
+            currentAttemp++;
+            attempRequest(remainingAttempts - 1);
+          }else{
+            console.log(`"All attempts failed."`)
+          }
         }
-      }
-    })
+      })
+  }
+  attempRequest(attempts);
 };
 
 makeRequestWithRetries(10);
