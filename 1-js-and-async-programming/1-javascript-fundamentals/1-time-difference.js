@@ -20,9 +20,9 @@ const timeDifference = (a, b) => {
     if( a < 0 || b < 0) throw new Error('');
     if( a === 0 && b === 0) return '00:00:00';
     const differenceInSeconds = Math.abs(a - b);
-    const hours = Math.floor(differenceInSeconds/3600);
-    const minutes = Math.floor(differenceInSeconds%3600/60);
-    const seconds = differenceInSeconds%3600%60;
+    const hours = Math.floor(differenceInSeconds / 3600);
+    const minutes = Math.floor(differenceInSeconds / 60) % 60;
+    const seconds = differenceInSeconds % 60;
     const padWidthZero = (num) => (num < 10) ? `0${num}` : String(num);
     return `${padWidthZero(hours)}:${padWidthZero(minutes)}:${padWidthZero(seconds)}`;
 };
