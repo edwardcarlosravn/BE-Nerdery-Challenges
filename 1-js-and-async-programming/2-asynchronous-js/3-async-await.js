@@ -45,7 +45,10 @@ const getCommonDislikedSubscription = async () => {
       acc[sub] = (acc[sub] || 0) + 1;
       return acc;
     },{})
-    return Object.entries(subscriptionCounts).sort((a, b) => b[1] - a[1])[0][0];
+    const [firstSubscription] = Object.entries(subscriptionCounts).sort((a, b) => b[1] - a[1])
+    const [subscriptionType] = firstSubscription
+    
+    return subscriptionType
   } catch (err) {
     console.log('Failed to determine subscription:', err.message);
     return "Error processing data";
