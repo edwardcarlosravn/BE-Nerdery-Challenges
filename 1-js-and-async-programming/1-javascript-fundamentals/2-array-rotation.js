@@ -20,9 +20,9 @@ rotateArray([1, 2, 3, 4, 5], 7); // Expected output: [3, 4, 5, 1, 2]
 const rotateArray = (arr, n) => {
     const arrayLength = arr.length;
     if(arrayLength < 2 || n === 0 || (n % arrayLength) === 0) return arr;
-    n = n % arrayLength;
-    const endSlice = [...arr.slice(n)];
-    const firstSlice = [...arr.slice(0,n)];
+    const positionsToRotate = n % arrayLength;
+    const endSlice = [...arr.slice(positionsToRotate)];
+    const firstSlice = [...arr.slice(0,positionsToRotate)];
     return [...endSlice,...firstSlice];
 };
 
