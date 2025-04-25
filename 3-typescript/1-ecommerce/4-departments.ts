@@ -11,10 +11,34 @@
  * - Add the name of the products in an array called productsNames inside the department object.
  */
 
-async function getDepartmentsWithProductCount(
-  departments: unknown[],
-  products: unknown[],
-): Promise<unknown[]> {
-  // Implement the function logic here
-  return [];
+import { Department, Product, DepartmentId } from './1-types';
+export interface DepartmentWithProductCount {
+  id : DepartmentId;
+  name: string; 
+  productCount: number;
+  productNames: string[];
+}
+export async function getDepartmentsWithProductCount(
+  departments: Department[],
+  products: Product[],
+): Promise<DepartmentWithProductCount[]> {
+  const productsByDeparment = new Map<DepartmentId, Product[]>();
+  products.forEach(product => { 
+    const deptId = product.departmentId;
+    if(!productsByDeparment.has(deptId)){
+      productsByDeparment.set(deptId,[]);
+    }
+    productsByDeparment.get(deptId)!.push(product);
+  });
+  const results : DepartmentWithProductCount[] = departments.map( department => {
+    const deptProducts = productsByDeparment.get(department.id) || [];
+    const productNames = deptProducts.map(product => product.name);
+    return {
+      id: department.id,
+      name: department.name,
+      productCount: deptProducts.length,
+      productNames: productNames
+    }
+  })
+  return results;
 }
