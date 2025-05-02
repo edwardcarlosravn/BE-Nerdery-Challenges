@@ -41,3 +41,66 @@
 
 
 -- your solution here
+CREATE OR REPLACE FUNCTION banking.transfer_funds(
+    from_id INT, 
+    to_id INT, 
+    amount NUMERIC
+) RETURNS TEXT AS $$
+DECLARE
+    from_balance NUMERIC;
+    to_balance NUMERIC;
+    from_status TEXT;
+    to_status TEXT;
+    ref_number TEXT := 'T-' || from_id || '-' || to_id;
+BEGIN
+    IF from_id = to_id THEN
+        RAISE EXCEPTION 'Cannot transfer to the same account';
+    END IF;
+    
+    IF amount <= 0 THEN
+        RAISE EXCEPTION 'Amount must be greater than 0';
+    END IF;
+    
+    SELECT balance, status INTO from_balance, from_status
+    FROM banking.accounts WHERE account_id = from_id FOR UPDATE;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Origin account does not exist';
+    END IF;
+    
+    SELECT balance, status INTO to_balance, to_status
+    FROM banking.accounts WHERE account_id = to_id FOR UPDATE;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'destination account does not exist';
+    END IF;
+    
+    IF from_status != 'active' THEN
+        RAISE EXCEPTION 'Origin account is not active';
+    END IF;
+    
+    IF to_status != 'active' THEN
+        RAISE EXCEPTION 'Destination account is not active';
+    END IF;
+    
+    IF from_balance < amount THEN
+        RAISE EXCEPTION 'Insufficient funds';
+    END IF;
+    
+    UPDATE banking.accounts SET balance = balance - amount 
+    WHERE account_id = from_id;
+    
+    UPDATE banking.accounts SET balance = balance + amount 
+    WHERE account_id = to_id;
+    
+    INSERT INTO banking.transactions (account_id, amount, transaction_type, reference)
+    VALUES (from_id, amount, 'withdrawal', ref_number),
+           (to_id, amount, 'deposit', ref_number);
+    
+    RETURN 'Transfer successful. Reference: ' || ref_number;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+$$ LANGUAGE plpgsql;
