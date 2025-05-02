@@ -7,7 +7,11 @@
     - film_count should show the total number of films in that category
     - Results should be grouped by category name
  */
-
+SELECT c.name category, COUNT(fc.film_id) film_count
+FROM category c
+JOIN film_category fc ON c.category_id = fc.category_id
+GROUP BY c.name
+ORDER BY c.name;
 
 -- your query here
 
@@ -23,7 +27,12 @@
 
  -- your query here
 
-
+SELECT c.first_name, c.last_name, SUM(p.amount) total_spent
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+ORDER BY total_spent DESC
+LIMIT 5;
 
 
 /*
@@ -38,6 +47,12 @@
 
 -- your query here
 
+SELECT DISTINCT f.title
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+WHERE r.rental_date >= CURRENT_DATE - INTERVAL '10 years'
+ORDER BY f.title;
 
 /*
     Challenge 4.
@@ -48,8 +63,12 @@
 */
 
 
--- your query here
-
+SELECT f.title, i.inventory_id
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+WHERE r.rental_id IS NULL
+ORDER BY f.title;
 
 
 
@@ -60,7 +79,17 @@
     - title should display the name of each film
     - rental_count should show the total number of times the film was rented
 */
-
+WITH film_rentals AS (
+    SELECT f.film_id, f.title, COUNT(r.rental_id) rental_count
+    FROM film f
+    JOIN inventory i ON f.film_id = i.film_id
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY f.film_id, f.title
+)
+SELECT title, rental_count
+FROM film_rentals
+WHERE rental_count > (SELECT AVG(rental_count) FROM film_rentals)
+ORDER BY rental_count DESC;
 
 
 -- your query here
@@ -74,7 +103,16 @@
     - The difference in days between the first and last rentals should be shown as rental_span_days
     - Results should be grouped by customer and ordered by rental_span_days in descending order
 */
-
+SELECT 
+    c.first_name, 
+    c.last_name,
+    MIN(r.rental_date) AS first_rental,
+    MAX(r.rental_date) AS last_rental,
+    (MAX(r.rental_date) - MIN(r.rental_date)) rental_span_days
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+ORDER BY rental_span_days DESC;
 -- your query here
 
 /*
@@ -86,7 +124,16 @@
 
 
 -- your query here
-
+SELECT c.first_name, c.last_name
+FROM customer c
+WHERE c.customer_id IN (
+    SELECT DISTINCT r.customer_id
+    FROM rental r
+    JOIN inventory i ON r.inventory_id = i.inventory_id
+    JOIN film_category fc ON i.film_id = fc.film_id
+    GROUP BY r.customer_id
+    HAVING COUNT(DISTINCT fc.category_id) < (SELECT COUNT(*) FROM category)
+ORDER BY c.last_name, c.first_name;
 /*
     Bonus Challenge 8 (opt)
     Find the Top 3 Most Frequently Rented Films in Each Category and Their Total Rental Revenue.
@@ -98,5 +145,28 @@
 
 -- your query here
 
-
+SELECT 
+    f.title,
+    c.name AS category,
+    COUNT(r.rental_id) AS rental_count,
+    SUM(p.amount) AS total_revenue
+FROM film f
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+JOIN payment p ON r.rental_id = p.rental_id
+GROUP BY f.film_id, c.category_id, c.name, f.title
+HAVING (f.film_id, COUNT(r.rental_id)) IN (
+    SELECT f2.film_id, COUNT(r2.rental_id)
+    FROM film f2
+    JOIN film_category fc2 ON f2.film_id = fc2.film_id
+    JOIN inventory i2 ON f2.film_id = i2.film_id
+    JOIN rental r2 ON i2.inventory_id = r2.inventory_id
+    WHERE fc2.category_id = c.category_id
+    GROUP BY f2.film_id
+    ORDER BY COUNT(r2.rental_id) DESC
+    LIMIT 3
+)
+ORDER BY c.name, rental_count DESC;
 
