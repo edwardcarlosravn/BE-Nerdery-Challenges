@@ -38,30 +38,32 @@ export async function analyzeProductPrices(products: Product[]): Promise<PriceAn
       averageDiscount: 0
     }
   }
-
-  const totalPrice = products.reduce((sum, product) => sum + product.price, 0);
+  let totalPrice = 0;
+  let mostExpensiveProduct = products[0];
+  let cheapestProduct = products[0];
+  let onSaleCount = 0;
+  let totalDiscount = 0;
+  
+  for(const product of products) {
+    totalPrice += product.price;
+    if(product.price > mostExpensiveProduct.price){
+      mostExpensiveProduct = product;
+    }
+    if(product.price < cheapestProduct.price){
+      cheapestProduct = product;
+    }
+    if(product.onSale){
+      onSaleCount++;
+      if(product.salePrice !== null) {
+        const discount = ((product.price - product.salePrice) / product.price) * 100;
+        totalDiscount += discount;
+      }
+    }
+  }
 
   const averagePrice = Number((totalPrice / products.length).toFixed(2));
 
-  const mostExpensiveProduct = products.reduce((max, product) => product.price > max.price ? product : max, products[0]);
-
-  const cheapestProduct = products.reduce((min, product) => product.price < min.price ? product : min, products[0]);
-
-  const onSaleProducts = products.filter(product => product.onSale);
-
-  const onSaleCount = onSaleProducts.length;
-
-  let averageDiscount = 0;
-  if(onSaleCount > 0) {
-    const totalDiscount = onSaleProducts.reduce((sum, product) => {
-      if (product.salePrice !== null) {
-        const discount = ((product.price - product.salePrice) / product.price) * 100;
-        return sum + discount;
-      }
-      return sum;
-    }, 0);
-    averageDiscount = Number((totalDiscount/onSaleCount).toFixed(2));
-  }
+  let averageDiscount = onSaleCount > 0 ? Number((totalDiscount/onSaleCount).toFixed(2)) : 0;
 
   return {
     totalPrice,
@@ -73,7 +75,6 @@ export async function analyzeProductPrices(products: Product[]): Promise<PriceAn
   }
 
 }
-
 /**
  *  Challenge 2: Build a Product Catalog with Brand Metadata
  *
@@ -134,11 +135,10 @@ export async function buildProductCatalog(
  * - The function should return an array of Product objects with the modified images array.
  * - Use proper TypeScript typing for parameters and return values.
  */
-
+// Fix 
 export async function filterProductsWithOneImage(
   products: Product[],
 ): Promise<Product[]> {
-
   const productsWithImages = products.filter(product => Array.isArray(product.images) && product.images.length > 0);
   
   return productsWithImages.map(product => {
