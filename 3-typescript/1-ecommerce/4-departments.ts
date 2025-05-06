@@ -18,20 +18,26 @@ export interface DepartmentWithProductCount {
   productCount: number;
   productNames: string[];
 }
+export function groupProductsByDepartment(products: Product[]): Map<DepartmentId, Product[]> {
+  const map = new Map<DepartmentId, Product[]>();
+  
+  products.forEach(product => {
+    const deptProducts = map.get(product.departmentId) || [];
+    deptProducts.push(product);
+    map.set(product.departmentId, deptProducts);
+  });
+  
+  return map;
+}
 export async function getDepartmentsWithProductCount(
   departments: Department[],
   products: Product[],
 ): Promise<DepartmentWithProductCount[]> {
-  const productsByDeparment = new Map<DepartmentId, Product[]>();
-  products.forEach(product => { 
-    const deptId = product.departmentId;
-    if(!productsByDeparment.has(deptId)){
-      productsByDeparment.set(deptId,[]);
-    }
-    productsByDeparment.get(deptId)!.push(product);
-  });
+
+  const productsByDepartment = groupProductsByDepartment(products);
+
   const results : DepartmentWithProductCount[] = departments.map( department => {
-    const deptProducts = productsByDeparment.get(department.id) || [];
+    const deptProducts = productsByDepartment.get(department.id) || [];
     const productNames = deptProducts.map(product => product.name);
     return {
       id: department.id,
