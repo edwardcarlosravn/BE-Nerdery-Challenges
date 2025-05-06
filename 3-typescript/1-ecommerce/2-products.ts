@@ -18,9 +18,63 @@
  *
  *
  **/
+import { Product, Nullable, Brand } from "./1-types";
+interface PriceAnalysis{
+  totalPrice: number;
+  averagePrice: number;
+  mostExpensiveProduct: Nullable<Product>;
+  cheapestProduct : Nullable<Product>;
+  onSaleCount: number;
+  averageDiscount: number; 
+}
+export async function analyzeProductPrices(products: Product[]): Promise<PriceAnalysis> {
+  if(products.length === 0){
+    return {
+      totalPrice: 0,
+      averagePrice: 0,
+      mostExpensiveProduct: null,
+      cheapestProduct: null,
+      onSaleCount: 0,
+      averageDiscount: 0
+    }
+  }
+  let totalPrice = 0;
+  let mostExpensiveProduct = products[0];
+  let cheapestProduct = products[0];
+  let onSaleCount = 0;
+  let totalDiscount = 0;
+  
+  for(const product of products) {
+    totalPrice += product.price;
+    if(product.price > mostExpensiveProduct.price){
+      mostExpensiveProduct = product;
+    }
+    if(product.price < cheapestProduct.price){
+      cheapestProduct = product;
+    }
+    if(product.onSale){
+      onSaleCount++;
+      if(product.salePrice !== null) {
+        const discount = ((product.price - product.salePrice) / product.price) * 100;
+        totalDiscount += discount;
+      }
+    }
+  }
 
-async function analyzeProductPrices(products: any[]): Promise<any> {}
+  const averagePrice = Number((totalPrice / products.length).toFixed(2));
 
+  let averageDiscount = onSaleCount > 0 ? Number((totalDiscount/onSaleCount).toFixed(2)) : 0;
+
+  return {
+    totalPrice,
+    averagePrice,
+    mostExpensiveProduct,
+    cheapestProduct,
+    onSaleCount,
+    averageDiscount
+  }
+
+}
 /**
  *  Challenge 2: Build a Product Catalog with Brand Metadata
  *
@@ -34,12 +88,38 @@ async function analyzeProductPrices(products: any[]): Promise<any> {}
   - If a product’s brandId does not match any active brand, it should be excluded.
   - The brandInfo field should include the rest of the brand metadata (name, logo, description, etc.).
  */
+interface EnrichedProduct extends Omit<Product, 'brandId'>{
+  brandInfo: Omit<Brand, 'id' | 'isActive'>;
+}
+export async function buildProductCatalog(
+  products: Product[],
+  brands: Brand[],
+): Promise<EnrichedProduct[]> {
 
-async function buildProductCatalog(
-  products: unknown[],
-  brands: unknown[],
-): Promise<unknown[]> {
-  return [];
+  const ActivebrandsMap = new Map<string | number, Omit<Brand, 'id' | 'isActive'>>();
+
+  for(const brand of brands){ 
+    if(brand.isActive){
+      const {id, isActive, ...brandInfo} = brand;
+      ActivebrandsMap.set(String(id),brandInfo);
+    }
+  }
+
+  const enrichedProduct:  EnrichedProduct [] = []
+
+  for(const product of products){
+    if(product.isActive){
+      const brandInfo = ActivebrandsMap.get(String(product.brandId));
+      if(brandInfo){
+        const {brandId, ...productWithoutBrandId} = product;
+        enrichedProduct.push({
+          ...productWithoutBrandId,
+          brandInfo
+        })
+      }
+    }
+  }
+  return enrichedProduct;
 }
 
 /**
@@ -55,11 +135,17 @@ async function buildProductCatalog(
  * - The function should return an array of Product objects with the modified images array.
  * - Use proper TypeScript typing for parameters and return values.
  */
-
-async function filterProductsWithOneImage(
-  products: unknown[],
-): Promise<unknown[]> {
-  // Implement the function logic here
-
-  return [];
+// Fix 
+export async function filterProductsWithOneImage(
+  products: Product[],
+): Promise<Product[]> {
+  const productsWithImages = products.filter(product => Array.isArray(product.images) && product.images.length > 0);
+  
+  return productsWithImages.map(product => {
+    const productWithOneImage = {
+      ...product,
+      images: [product.images[0]]
+    }
+    return productWithOneImage;
+  })
 }

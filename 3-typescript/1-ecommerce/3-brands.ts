@@ -11,11 +11,42 @@
  * - The amount of products should be calculated by counting the number of products that have a brandId matching the id of a brand in the same country.
  * - The return should be a type that allow us to define the country name as a key and the amount of products as a value.
  */
+import { Brand, Product, Country } from './1-types';
+export type CountryProductCount = {
+  [key in Country]?: number;
+};
 
-async function getCountriesWithBrandsAndProductCount(
-  brands: unknown[],
-  products: unknown[],
-): Promise<unknown> {
-  // Implement the function logic here
-  return;
+export type StrictCountryProductCount = Record<Country, number>;
+export function createBrandCountryMap(brands: Brand[]): Map<string, Country> {
+  const map = new Map<string, Country>();
+  
+  for (const brand of brands) {
+    const country = extractCountryFromHeadquarters(brand.headquarters);
+    map.set(String(brand.id), country);
+  }
+  
+  return map;
+}
+
+export function extractCountryFromHeadquarters(headquarters: string): Country {
+  const parts = headquarters.split(', ');
+  return parts[parts.length - 1] as Country;
+}
+
+export async function getCountriesWithBrandsAndProductCount(
+  brands: Brand[],
+  products: Product[],
+): Promise<StrictCountryProductCount> {
+
+  const brandCountryMap = createBrandCountryMap(brands);
+  
+  const result: StrictCountryProductCount = {} as StrictCountryProductCount;
+  
+  products.forEach(product => {
+    const country = brandCountryMap.get(String(product.brandId));
+    if (country) {
+      result[country] = (result[country] || 0) + 1;
+    }
+  });
+  return result;
 }
