@@ -96,8 +96,12 @@ export interface FormalSpecifications extends BaseProductSpecifications{
 export interface KidsSpecifications extends BaseProductSpecifications{
     flexibility: string;
 }
-
-export type ProductSpecifications = | BaseProductSpecifications | AthleticSpecifications | BootSpecifications | FormalSpecifications | KidsSpecifications;
+type ProductSpecifications =
+  | ({ type: 'base' } & BaseProductSpecifications)
+  | ({ type: 'athletic' } & AthleticSpecifications)
+  | ({ type: 'boot' } & BootSpecifications)
+  | ({ type: 'formal' } & FormalSpecifications)
+  | ({ type: 'kids' } & KidsSpecifications);
 
 export type ProductImage = {
     id: number;
@@ -145,7 +149,7 @@ export interface Product{
     onSale: boolean;
     colors  : string[];
     sizes: number[];
-    tags: string[] | ProductTag[];
+    tags: (string | ProductTag)[];
     images: ProductImage[];
     specifications: ProductSpecifications;
 }
