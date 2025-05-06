@@ -17,31 +17,36 @@ export type CountryProductCount = {
 };
 
 export type StrictCountryProductCount = Record<Country, number>;
+export function createBrandCountryMap(brands: Brand[]): Map<string, Country> {
+  const map = new Map<string, Country>();
+  
+  for (const brand of brands) {
+    const country = extractCountryFromHeadquarters(brand.headquarters);
+    map.set(String(brand.id), country);
+  }
+  
+  return map;
+}
+
+export function extractCountryFromHeadquarters(headquarters: string): Country {
+  const parts = headquarters.split(', ');
+  return parts[parts.length - 1] as Country;
+}
 
 export async function getCountriesWithBrandsAndProductCount(
   brands: Brand[],
   products: Product[],
 ): Promise<StrictCountryProductCount> {
-  const brandCountryMap = new Map<string | number, Country>();
+
+  const brandCountryMap = createBrandCountryMap(brands);
   
-  brands.forEach(brand => {
-    const parts = brand.headquarters.split(', ');
-    const country = parts[parts.length - 1] as Country;
-    
-    brandCountryMap.set(String(brand.id), country);
-  });
-  
-  const countryCount: Partial<Record<Country, number>> = {};
+  const result: StrictCountryProductCount = {} as StrictCountryProductCount;
   
   products.forEach(product => {
-    const brandId = String(product.brandId);
-    const country = brandCountryMap.get(brandId);
-    if (country) {  
-      countryCount[country] = (countryCount[country] || 0) + 1;
+    const country = brandCountryMap.get(String(product.brandId));
+    if (country) {
+      result[country] = (result[country] || 0) + 1;
     }
   });
-  return Object.entries(countryCount).reduce((result, [country, count]) => {
-    result[country as Country] = count || 0;
-    return result;
-  }, {} as StrictCountryProductCount);
+  return result;
 }
