@@ -95,31 +95,29 @@ export async function buildProductCatalog(
   products: Product[],
   brands: Brand[],
 ): Promise<EnrichedProduct[]> {
-  
-  const activeBrands = brands.filter(brand => brand.isActive);
 
-  const brandsMap = new Map<string | number, Brand>();
-
-  activeBrands.forEach(brand => {
-    brandsMap.set(String(brand.id), brand);
-  })
-
-  const activeProducts = products.filter(product => product.isActive);
-
-  const enrichedProducts = activeProducts.map(product => {
-    const brand = brandsMap.get(String(product.brandId));
-    if(!brand) return null;
-    const {brandId, ...productWithoutBrandId} = product;
-    const {id, isActive, ...brandInformationWithoutIdAndActive} = brand;
-    return {
-      ...productWithoutBrandId,
-      brandInfo: brandInformationWithoutIdAndActive
+  const ActivebrandsMap = new Map<string | number, Omit<Brand, 'id' | 'isActive'>>();
+  for(const brand of brands){ 
+    if(brand.isActive){
+      const {id, isActive, ...brandInfo} = brand;
+      ActivebrandsMap.set(String(id),brandInfo);
     }
-  })
-
-  const enrichedProductsFiltered = enrichedProducts.filter((product) : product is EnrichedProduct => product !== null);
-
-  return enrichedProductsFiltered;
+  }
+  
+  const result:  EnrichedProduct [] = []
+  for(const product of products){
+    if(product.isActive){
+      const brandInfo = ActivebrandsMap.get(String(product.brandId));
+      if(brandInfo){
+        const {brandId, ...productWithoutBrandId} = product;
+        result.push({
+          ...productWithoutBrandId,
+          brandInfo
+        })
+      }
+    }
+  }
+  return result;
 }
 
 /**
