@@ -97,27 +97,29 @@ export async function buildProductCatalog(
 ): Promise<EnrichedProduct[]> {
 
   const ActivebrandsMap = new Map<string | number, Omit<Brand, 'id' | 'isActive'>>();
+
   for(const brand of brands){ 
     if(brand.isActive){
       const {id, isActive, ...brandInfo} = brand;
       ActivebrandsMap.set(String(id),brandInfo);
     }
   }
-  
-  const result:  EnrichedProduct [] = []
+
+  const enrichedProduct:  EnrichedProduct [] = []
+
   for(const product of products){
     if(product.isActive){
       const brandInfo = ActivebrandsMap.get(String(product.brandId));
       if(brandInfo){
         const {brandId, ...productWithoutBrandId} = product;
-        result.push({
+        enrichedProduct.push({
           ...productWithoutBrandId,
           brandInfo
         })
       }
     }
   }
-  return result;
+  return enrichedProduct;
 }
 
 /**
