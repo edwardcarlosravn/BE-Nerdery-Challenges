@@ -38,10 +38,10 @@
                                        | transaction_date         |
                                        +--------------------------+
 */
-
+-- Para este ejercicio creamos una funcion banking.trasnsfer_founds, para ello recibimos tres parametros from_id de quien deposita, to_id a quien deposita y amoun la cantidad, retornamos un texto empezamos declarando o inicializando valores, from balance y to balance seran numericos y nos serviran para los nuevos balances, from y to status para ver el status del que envia y el que recibe y ref_number un texto para indicar que operacion se hizo primero hacemos una comparacion de deposito assi mismo en caso de true lanzamos una excepcion las excepciones las tratamos en su scoop usamos rollback para deshacer cambios y raise para mostrarle al usuario el error, sigamos verificamos que el amount sea positivo, luego usamos select into que es propio de postgres, nos permite seleccionar e introducir en nuestras variables declaradas en esta primera ocasion balance sera from_balance y status sera from_status y corroboramos si ese id existe por ende si el cliente existe y llenamos sus datos, lo mismo para el destinatario un select into, en caso contrario siempre lanzamos una excepcion. verificamos ahora ambos status si estan activos o no, y por el ultimo si el que envia tiene saldo disponible o no , una vez validada toda esta informacion, proseguimos a ejecutar hacemos un set descontando el amount de que envia y tambien seteamos adicionando el amount del que recibe y agregamos esa informacion a banking.transactions. y por ultimo retornamos el texto que es un mensaje
 
 -- your solution here
-CREATE OR REPLACE FUNCTION banking.transfer_funds(
+CREATE OR REPLACE FUNCTION banking.transfer_founds(
     from_id INT, 
     to_id INT, 
     amount NUMERIC
